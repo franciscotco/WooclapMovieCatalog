@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
 // Component
-import Home from './components/Home';
+import HomePage from './components/HomePage';
 
 // Constant
-import { ROOT } from './constant';
+import { ROOT } from './constants';
 
 // import logo from './logo.svg';
 // import './App.css';
@@ -20,11 +21,13 @@ const NoMatch = () => (
   </div>
 );
 
+export const history = createBrowserHistory();
+
 function App() {
   return (
-    <Router>
+    <Router history={history}>
       <Switch>
-        <Route path={ROOT} component={Home} />
+        <Route path={ROOT} component={HomePage} />
         <Route component={NoMatch} />
       </Switch>
     </Router>
