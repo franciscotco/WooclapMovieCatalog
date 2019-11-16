@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { useFetchMovies } from '../useFetchMovie';
 
 // Constants
-import { URL_IMG, DETAIL } from '../../constants';
+import { URL_IMG, MOVIE } from '../../constants';
 
 const SearchBar = (props) => {
    const { setSearch } = props;
@@ -31,10 +31,10 @@ const ButtonFetchMovie = (props) => {
 };
 
 const _Card = (props) => {
-   const { title, poster_path, history } = props;
+   const { title, poster_path, history, id } = props;
    
    const handleOnClick = () => {
-      history.push(DETAIL);
+      history.push(MOVIE + '/' + id);
    }
 
    return (

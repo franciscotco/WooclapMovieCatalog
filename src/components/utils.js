@@ -7,7 +7,6 @@ export const initRequest = {
    [API_KEY_REQ]: API_KEY,
    [LANGUAGE_REQ]: US_REQ,
    [PAGE_REQ]: 1,
-   [ADULT_REQ]: false,
 }
 
 export const createRequest = (page, obj) => {
