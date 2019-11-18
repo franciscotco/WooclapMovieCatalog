@@ -1,0 +1,38 @@
+.container-movie-page {
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   /* height: 50vh; */
+   overflow: auto;
+}
+
+.title-movie-page {
+   font-size: 24px;
+   font-weight: 700;
+   text-align: center;
+   margin: 20px;
+}
+
+.poster-movie-page {
+   /* width: 350px;
+   height: 250px; */
+   border: 3px solid black;
+}
+
+.text-information-movie-page {
+   font-size: 16;
+   margin: 4px;
+   margin-left: 6px;
+}
+
+.genre-movie-page {
+   display: inline;
+   margin-right: 4px;
+}
+
+.layer-movie-page {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
+}
