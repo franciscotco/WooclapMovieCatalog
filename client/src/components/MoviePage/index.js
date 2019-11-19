@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 // Components
 import Button from '../Base/Button';
 import ButtonSwitchDB from '../Base/ButtonSwitchDB';
-import { useFetchMovieById, postMovie, useFetchLocalMovieById, useLazyImage } from '../useFetchMovie';
+import { useFetchMovieById, postMovie, useFetchLocalMovieById, useLazyImage, deleteMovieById } from '../useFetchMovie';
 
 // Constants
 import { ID_MOVIE, URL_IMG_300, ID_DB, TM_DB, LOCAL_DB, SEARCH } from '../../constants';
@@ -87,9 +87,10 @@ const DetailMovie = (props) => {
 };
 
 const AddMovie = (props) => {
-   const { movie } = props;
+   const { movie, match } = props;
 
    if (!movie) return null;
+   const { params: {[ID_DB]: id_db}} = match;
 
    const handleOnClick = async () => {
       try {
@@ -100,8 +101,32 @@ const AddMovie = (props) => {
       }
    }
 
+   if (id_db !== TM_DB) return null;
+
    return ( <Button text="Download" onClick={handleOnClick} /> );
 };
+
+const RemoveMovie = (props) => {
+   const { movie, match } = props;
+
+   if (!movie) return null;
+   const { params: {[ID_DB]: id_db}} = match;
+
+   const handleOnClick = async () => {
+      const { _id } = movie;
+      console.log("movie :", movie);
+      try {
+         await deleteMovieById({id: _id});
+         console.log("success");
+      } catch (err) {
+         console.error(err);
+      }
+   }
+
+   if (id_db !== LOCAL_DB) return null;
+
+   return ( <Button text="Remove" onClick={handleOnClick} /> );
+}
 
 const MoviePage = (props) => {
    const { history, match, fetchMovie } = props;
@@ -122,7 +147,8 @@ const MoviePage = (props) => {
                   text="Back to search result"
                   onClick={handleOnClick}
                />
-               <AddMovie movie={movie}/>
+               <AddMovie movie={movie} {...props} />
+               <RemoveMovie movie={movie} {...props} />
             </div>
          </div>
       </>

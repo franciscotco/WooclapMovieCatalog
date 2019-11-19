@@ -136,16 +136,24 @@ export const useFetchLocalMovieById = (props) => {
    return (movie);
 }
 
+export const deleteMovieById = async ({id}) => {
+   const url = "http://localhost:5000/api/movies" + '/' + id;
+   try {
+      const response = await fetch(url, {
+         method: 'delete',
+         headers: {'Content-Type':'application/json'},
+      });
+      const json = await response.json();
+      console.log("JSON: ", json);
+      return (json);
+   } catch (err) {
+      throw new Error("Invalid delete request LOCAL DB");
+   }
+}
+
 export const postMovie = async (props) => {
-   // const { movie } = props;
    const url = "http://0.0.0.0:5000/api/movies";
    const body = JSON.stringify(props);
-   // if (!response.ok) {
-   //    // setResponse(null);
-   //    // console.error(response);
-   //    return null;
-   // }
-   // console.warn("Response :", response);
    try {
       const response = await fetch(url, {
          method: 'post',
@@ -155,12 +163,8 @@ export const postMovie = async (props) => {
       });
       const json = await response.json();
       console.log("JSON: ", json);
-      // console.log("JSON.parse :", JSON.stringify(json));
-      // setResponse(json);
       return (json);
    } catch (err) {
-      // console.log("Error");
-      // setResponse(null);
       throw new Error("Invalid post request LOCAL DB");
    }
 }

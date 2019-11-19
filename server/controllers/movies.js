@@ -4,7 +4,7 @@ import models from '../models';
 import { TITLE, POSTER_PATH } from '../constants';
 
 // Errors
-import { InvalidRequestFormat } from '../error';
+import { InvalidRequestFormat } from '../errors';
 
 const searchMovieByName = async ({query: {search}}, res, next) => {
    if (!search) return next(new InvalidRequestFormat('Missing element to search'));
