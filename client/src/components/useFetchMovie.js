@@ -7,25 +7,32 @@ import { initRequest, createRequest } from './utils';
 import { URI, FETCH_MOVIE, QUERY_REQ, ADULT_REQ } from '../constants';
 import { MOVIE_DETAIL } from '../constants';
 
+export const useLazyImage = ({ name, url }) => {
+   const [image, setImage] = React.useState(null);
+
+   React.useEffect(() => {
+      const loadImage = new Image();
+      loadImage.src = url + name;
+      loadImage.onload = () => setImage(url + name);
+   }, [name]);
+
+   if (!name || !url) return null;
+
+   return (image);
+};
+
+/*
+**          TMDB_API
+*/
+
 export const fetchApi = async (uri) => {
-   // console.log("URI", uri);
-   const response = await fetch(uri);
-   if (!response.ok) {
-      return (null);
-      // console.error(response);
-   }
-   // console.warn("Response :", response);
-   const json = await response.json();
    try {
-      console.log("JSON: ", json);
-      // console.log("JSON.parse :", JSON.stringify(json));
+      const response = await fetch(uri);
+      const json = await response.json();
       return (json);
    } catch (err) {
-      // console.log("Error");
-      // setResponse(null);
-      throw "Error";
+      throw new Error("Invalid request TMDB API");
    }
-   return response;
 }
 
 export const useFetchMovies = (props) => {
@@ -42,64 +49,8 @@ export const useFetchMovies = (props) => {
       };
       const url = URI + FETCH_MOVIE;
       const uri = createRequest(url, request);
-      // console.log("Response :", fetchMovie());
       fetchApi(uri)
          .then(res => setMovies(res.results))
-         .catch(err => console.error(err));
-   }, [fetchSearch]);
-
-   return (movies);
-};
-
-
-export const fetchLocalApi = async (url, query) => {
-   // const { movie } = props;
-   // console.log("PROPS:", props);
-   // console.log("MOVIE :", movie);
-   // const url = "http://localhost:5000/api/movies";
-   // console.log("req :", createRequest(null, props));
-   // const uri = createRequest(url, request);
-   const response = await fetch(url, {
-         method: 'get',
-         headers: {'Content-Type':'application/x-www-form-urlencoded'},
-         query: {"search":"toto"}
-      });
-   if (!response.ok) {
-      // setResponse(null);
-      // console.error(response);
-      throw "Error";
-   }
-   // console.warn("Response :", response);
-   const json = await response.json();
-   try {
-      console.log("JSON: ", json);
-      // console.log("JSON.parse :", JSON.stringify(json));
-      // setResponse(json);
-      return (json);
-   } catch (err) {
-      // console.log("Error");
-      // setResponse(null);
-      throw "Error";
-   }
-}
-
-export const useFetchLocalMovies = (props) => {
-   const { search, fetchSearch } = props;
-   const [movies, setMovies] = React.useState(null);
-
-   React.useEffect(() => {
-      if (!search)
-         return setMovies(null);
-      const request = {
-         // ...initRequest,
-         "search": search,
-         // [ADULT_REQ]: false,
-      };
-      const url = "http://localhost:5000/api/movies"
-      const uri = createRequest(url, request);
-      // console.log("Response :", fetchMovie());
-      fetchLocalApi(uri)
-         .then(res => setMovies(res))
          .catch(err => console.error(err));
    }, [fetchSearch]);
 
@@ -118,13 +69,50 @@ export const useFetchMovieById = (props) => {
       }
       const url = URI + MOVIE_DETAIL + '/' + id;
       const uri = createRequest(url, request);
-      console.log("URI :", uri);
       fetchApi(uri)
          .then(res => setMovie(res))
          .catch(err => console.log(err));
    }, [id]);
 
    return (movie);
+};
+
+/*
+**          LOCAL_API
+*/
+
+export const fetchLocalApi = async (url, query) => {
+   try {
+      const response = await fetch(url, {
+         method: 'get',
+         headers: {'Content-Type':'application/x-www-form-urlencoded'},
+         query: {"search":"toto"}
+      });
+      const json = await response.json();
+      return (json);
+   } catch (err) {
+      throw new Error("Invalid request LOCAL API");
+   }
+}
+
+export const useFetchLocalMovies = (props) => {
+   const { search, fetchSearch } = props;
+   const [movies, setMovies] = React.useState(null);
+
+   React.useEffect(() => {
+      if (!search)
+         return setMovies(null);
+      const request = {
+         "search": search,
+      };
+      const url = "http://localhost:5000/api/movies";
+      const uri = createRequest(url, request);
+      fetchLocalApi(uri)
+         .then(res => setMovies(res))
+         .catch(err => console.error(err));
+   }, [fetchSearch]);
+
+   return (movies);
 };
 
 export const useFetchLocalMovieById = (props) => {
@@ -137,44 +125,35 @@ export const useFetchLocalMovieById = (props) => {
       const request = {
          ...initRequest,
       }
-      const url = "http://localhost:5000/api/movies" + '/' + id;
+      const url = "http://0.0.0.0:5000/api/movies" + '/' + id;
       const uri = createRequest(url, request);
-      console.log("URI :", uri);
+      // console.log("URI :", uri);
       fetchLocalApi(uri)
          .then(res => setMovie(res))
-         .catch(err => console.log(err));
+         .catch(err => {console.log(err); setMovie(null)});
    }, [id]);
 
    return (movie);
 }
 
 export const postMovie = async (props) => {
-   // const request = {
-   //    id
-   // };
-   const { movie } = props;
-   console.log("PROPS:", props);
-   console.log("MOVIE :", movie);
-   const url = "http://localhost:5000/api/movies";
-   console.log("req :", createRequest(null, props));
-   // const uri = createRequest(url, request);
+   // const { movie } = props;
+   const url = "http://0.0.0.0:5000/api/movies";
    const body = JSON.stringify(props);
-   console.error("Body :", body);
-   const response = await fetch(url, {
+   // if (!response.ok) {
+   //    // setResponse(null);
+   //    // console.error(response);
+   //    return null;
+   // }
+   // console.warn("Response :", response);
+   try {
+      const response = await fetch(url, {
          method: 'post',
          headers: {'Content-Type':'application/json'},
-         // body: createRequest(null, props)
          json:true,
          body
       });
-   if (!response.ok) {
-      // setResponse(null);
-      // console.error(response);
-      return null;
-   }
-   // console.warn("Response :", response);
-   const json = await response.json();
-   try {
+      const json = await response.json();
       console.log("JSON: ", json);
       // console.log("JSON.parse :", JSON.stringify(json));
       // setResponse(json);
@@ -182,7 +161,6 @@ export const postMovie = async (props) => {
    } catch (err) {
       // console.log("Error");
       // setResponse(null);
-      throw "Error";
+      throw new Error("Invalid post request LOCAL DB");
    }
-   return response;
 }

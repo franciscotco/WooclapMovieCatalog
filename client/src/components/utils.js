@@ -1,5 +1,5 @@
 // Constants
-import { API_KEY, US_REQ, LANGUAGE_REQ, PAGE_REQ, ADULT_REQ, API_KEY_REQ } from '../constants';
+import { API_KEY, US_REQ, LANGUAGE_REQ, PAGE_REQ, API_KEY_REQ } from '../constants';
 
 // page: "/search/movie",
 
@@ -20,7 +20,7 @@ export const createRequest = (page, obj) => {
       if (Array.isArray(obj[key])) {
          let cnt = 0;
          while (cnt < obj[key].length) {
-            console.log("obj", obj[key][cnt]);
+            // console.log("obj", obj[key][cnt]);
             request =+ key + "[" + cnt + "]=" + obj[key][cnt];
             cnt += 1;
          }

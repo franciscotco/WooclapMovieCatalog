@@ -1,14 +1,13 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-// import { history } from '../App';
 
 // Components
-import SwitchDb from '../Base/SwitchDB';
-import { useFetchMovies, useFetchLocalMovies } from '../useFetchMovie';
+import ButtonSwitchDb from '../Base/ButtonSwitchDB';
+import { useFetchMovies, useFetchLocalMovies, useLazyImage } from '../useFetchMovie';
 
 // Constants
 import Button from '../Base/Button';
-import { URL_IMG_180, MOVIE, ID_DB } from '../../constants';
+import { URL_IMG_180, MOVIE, ID_DB, LOCAL_DB, TM_DB } from '../../constants';
 
 // Styles
 import './SearchPage.css'
@@ -18,109 +17,55 @@ const SearchBar = (props) => {
 
    const handleOnChange = (e) => setSearch(e.currentTarget.value);
 
-   return (
-      <input onChange={handleOnChange} />
-   );
+   return ( <input onChange={handleOnChange} /> );
 }
 
 const ButtonFetchMovie = (props) => {
    const { fetchSearch, setFetchSearch, search } = props;
-   // let test = null;
-   // const [time, setTime] = React.useState(10);
-   // const tick = () => {
 
-      // This function is called every 50 ms. It updates the
-      // elapsed counter. Calling setState causes the component to be re-rendered
-
-      // this.setState({elapsed: new Date() - this.props.start});
-//       setTime(new Date() - time);
-//   };
-// console.log(time);
-   // const timer = () => {
-   //    setFetchSearch(search);
-   // };
    React.useEffect(() => {
       if (!search) return ;
-      console.error("search :", search);
-      console.log("Search :", search);
-      // const test = async () => {
-      // const tutu = setInterval(() => {
-      //    console.log("Hey");
-      //    clearInterval(tutu);
-      // }, 500);
+   
       const timer = setInterval(() => setFetchSearch(!fetchSearch), 500);
       return () => clearInterval(timer);
-      // }
-      // test()
-      //    .then(() => {})
-      //    .catch(() => {});
-      // setTest();
-   //    test = setInterval(() => {
-   //       console.log("Hey");
-   //       // This function is called every 50 ms. It updates the
-   //       // elapsed counter. Calling setState causes the component to be re-rendered
-
-   //       // this.setState({elapsed: new Date() - this.props.start});
-   //       // setTime(new Date() - time);
-   //       setFetchSearch(!fetchSearch)
-   //       return ;
-   //   }, 500);
-   //   clearInterval(test);
-     // setTest()
-      // return () => {
-      //    clearInterval(test);
-      // }
    }, [search]);
 
    const handleOnClick = () => setFetchSearch(!fetchSearch);
 
-   return (
-      // <div role="button" onClick={handleOnClick}>
-      <Button text="Search" onClick={handleOnClick}/>
-      // </div>
-   );
+   return ( <Button text="Search" onClick={handleOnClick}/> );
 };
 
 const _Card = (props) => {
-   const { title, poster_path } = props;
-   const [poster, setPoster] = React.useState(null);
-   // const image = `background-image: url(${URL_IMG}${poster_path})`;
-   // console.log("ID :", props);
-   React.useEffect(() => {
-      const loadPoster = new Image();
-      loadPoster.src = URL_IMG_180 + poster_path;
-
-      loadPoster.onload = () => setPoster(URL_IMG_180 + poster_path);
-   }, [poster_path]);
+   const { title, poster_path, history } = props;
+   const image = useLazyImage({name: poster_path, url: URL_IMG_180});
 
    const handleOnClick = () => {
-      const { id, _id, history, match: {params: {[ID_DB]: id_db}} } = props;
-      history.push(MOVIE + '/' + (id || _id) + '/' + (id_db || "tmdb"));
+      const { id, _id, match: {params: {[ID_DB]: id_db}} } = props;
+      history.push(MOVIE + '/' + (id || _id) + '/' + (id_db || TM_DB));
    };
 
    return (
-      <div onClick={handleOnClick} className="card-movie-search-page" style={{backgroundImage: `url(${poster || ""})`}}>
-         <div className="title-card-movie-search-page">{title}</div>
-         {/* <img src={URL_IMG + poster_path} className="poster-movie-search-page"/> */}
+      <div onClick={handleOnClick} className="card-movie-search-page" style={{backgroundImage: `url(${image})`}}>
+         <div className="title-card-movie-search-page">
+            {title}
+         </div>
       </div>
    );
 }
 const Card = withRouter(_Card);
 
 const DisplayMovies = (props) => {
-   const { movies, history } = props;
+   const { movies } = props;
 
-   if (!movies) return null;
-   // const { results } = movies;
-   // if (!results) return null;
+   if (!movies || !Array.isArray(movies)) return null;
 
    return (
       <div className="layer-card-movie-search-page">
          <div className="container-card-movie-search-page">
             {movies.map(movie => {
-               // const obj = {...elem, history}
+               const { id, _id } = movie;
                return (
-               <React.Fragment key={movie.id}>
+               <React.Fragment key={id || _id}>
                   <Card {...movie} />
                </React.Fragment>
             )})}
@@ -130,11 +75,9 @@ const DisplayMovies = (props) => {
 };
 
 const HeaderSearchPage = (props) => {
-   // const { fetchSearch, setFetchSearch, setSearch, search } = props;
-
    return (
       <div className="container-header-search-page">
-         <div>
+         <div className="title-search-page">
             Movie Catalog
          </div>
          <div className="container-search-bar">
@@ -150,29 +93,25 @@ const SearchPage = (props) => {
    const [fetchSearch, setFetchSearch] = React.useState(false);
    const [search, setSearch] = React.useState(null);
    const movies = fetchMovie({search, fetchSearch});
+   const headerProps = { fetchSearch, setFetchSearch, setSearch, search };
 
-   console.log("Search :", search);
-   console.log("Movies :", movies);
-   const headerProps = {fetchSearch, setFetchSearch ,setSearch, search };
    return (
       <>
-         <SwitchDb />
+         <ButtonSwitchDb />
          <HeaderSearchPage {...headerProps} />
          <DisplayMovies movies={movies} />
       </>
    );
 };
 
-function wrap(WrappedComponent) {
+function switchDb(WrappedComponent) {
    return class extends React.Component {
       render() {
-         const { match, match: {params: {[ID_DB]: id}} } = this.props;
-         const fetch = id !== 'local' ? useFetchMovies : useFetchLocalMovies
+         const { match: {params: {[ID_DB]: id}} } = this.props;
+         const fetch = id !== LOCAL_DB ? useFetchMovies : useFetchLocalMovies
 
-         return (
-            <WrappedComponent fetchMovie={fetch} />
-         );
+         return (<WrappedComponent fetchMovie={fetch} />);
       };
    };
 };
-export default withRouter(wrap(SearchPage));
+export default withRouter(switchDb(SearchPage));

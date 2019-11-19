@@ -5,41 +5,38 @@ import { withRouter } from 'react-router-dom';
 import Button from '../Button';
 
 // Constants
-import { ID_DB } from '../../../constants';
+import { ID_DB, TM_DB, LOCAL_DB } from '../../../constants';
 
 // Style
 import './SwitchDB.css';
 
-const SwitchDB = (props) => {
+const ButtonSwitchDB = (props) => {
    const { history, match, match: {params: {[ID_DB]: id} }} = props;
+   const text = id ? id.toUpperCase() : TM_DB.toLocaleUpperCase();
 
    const handleOnClick = () => {
       const { params: { [ID_DB]: id_db }, url } = match;
       const array = url.split('/');
-      if (array.length < 2) return;
-      console.log("size", array.length)
-      array[array.length - 1] = (id_db === 'local') ? 'tmdb' : 'local';
-      console.table(array);
-      console.log("match :", match);
       let path = "";
+      let last_elem = array.length;
+
+      if (last_elem < 2) return;
+      if (id_db === TM_DB || id_db === LOCAL_DB)
+         last_elem = last_elem - 1;
+      array[last_elem] = (id_db === LOCAL_DB) ? TM_DB : LOCAL_DB;
       array.forEach(element => {
-         // if (path !== "")
-         //    path += '/';
          if (element !== "")
             path += '/' + element;
       });
-      console.log("url :", path);
       history.push(path);
       window.location.reload();
    }
 
-   // if (match.url === '/') return null;
-
    return (
       <div className="container-switch-button">
-         <Button onClick={handleOnClick} text={id.toUpperCase()} />
+         <Button onClick={handleOnClick} text={text} />
       </div>
    );
 };
 
-export default withRouter(SwitchDB);
+export default withRouter(ButtonSwitchDB);

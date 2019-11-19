@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import models from '../models';
 
 // Constants
@@ -11,19 +10,15 @@ const searchMovieByName = async ({query: {search}}, res, next) => {
    if (!search) return next(new InvalidRequestFormat('Missing element to search'));
 
    try {
-      console.log("search :", search);
       const movies = await models.Movies.find({
          [TITLE]: {
             "$regex": search, "$options": "i"
-         }
-         // $rename: { '_id': 'id' }
-      }).sort({ 
-            [TITLE]: 1 
+         }}).sort({ 
+            [TITLE]: 1
          }).select({
             [TITLE]: 1,
             [POSTER_PATH]: 1
          }).limit(10);
-      console.log("Movies :", movies);
       res.status(200).send(movies);
    } catch (err) {
       next(err);
@@ -42,30 +37,18 @@ const getById = async ({params: {id}}, res, next) => {
 };
 
 const post = async ({body}, res, next) => {
-   // console.log("REQ: ", req);
-   // const { title } = req;
    const { [TITLE]: title } = body;
    console.log("Title :", title);
    console.log("body :", body);
-   if (!title) return next(new InvalidRequestFormat('Missing title'))
+   if (!title) return next(new InvalidRequestFormat('Missing title'));
 
    try {
-      const Movie = new models.Movies(body);
-      const movie = await Movie.save()
+      // const Movie = new models.Movies(body);
+      const movie = await models.Movies(body).save()
       res.status(200).json(movie);
    } catch (err) {
       next(err);
    }
-   
-   // movie.save()
-   //    .then(data => res.send(data))
-   //    .catch(err => {
-   //       console.log("Err :", err);
-   //       res.status(500).send({
-   //          message: `Error durring the creation of the movie ${title}`
-   //       });
-   //    });
-   // res.send("post");
 };
 
 const put = async ({body, params: {id}}, res, next) => {
@@ -75,8 +58,6 @@ const put = async ({body, params: {id}}, res, next) => {
 
    try {
       const movie = await models.Movies.findOneAndUpdate(id, {...body}, {new: true});
-      // const test = await movie.select;
-      // console.log("Movie :", movie);
       res.status(200).json(movie);
    } catch (err) {
       next(err);
@@ -84,13 +65,10 @@ const put = async ({body, params: {id}}, res, next) => {
 };
 
 const deleteById = async ({params: {id}}, res, next) => {
-
-   console.log("DeleteById");
    if (!id) return next(new InvalidRequestFormat('Missing Id'));
 
    try {
       await models.Movies.deleteOne({_id: id});
-      // console.log("Delete :", deleteMovie);
       res.status(200).send({success: true});
    } catch (err) {
       next(err);

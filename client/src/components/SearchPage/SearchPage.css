@@ -49,3 +49,9 @@
    display: flex;
    flex-direction: row;
 }
+
+.title-search-page {
+   margin: 10px;
+   font-size: 24px;
+   font-weight: 700;
+}

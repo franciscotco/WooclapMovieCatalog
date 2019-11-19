@@ -4,15 +4,11 @@ import { createBrowserHistory } from 'history';
 
 // Component
 import HomePage from './components/HomePage';
-// import SwitchDB from './components/Base/SwitchDB';
 
 // Constant
-import { ROOT } from './constants';
+import { HOME } from './constants';
 
-// import logo from './logo.svg';
-// import './App.css';
-
-const NoMatch = () => (
+export const NoMatch = () => (
   <div>
     NoMatch
     <br />
@@ -23,17 +19,14 @@ const NoMatch = () => (
 );
 
 export const history = createBrowserHistory();
-
 function App() {
   return (
-    // <>
-      <Router history={history}>
-        <Switch>
-          <Route path={ROOT} component={HomePage} />
-          <Route component={NoMatch} />
-        </Switch>
-      </Router>
-    // </>
+    <Router history={history}>
+      <Switch>
+        <Route path={HOME} component={HomePage} />
+        <Route component={NoMatch} />
+      </Switch>
+    </Router>
   );
 }
 

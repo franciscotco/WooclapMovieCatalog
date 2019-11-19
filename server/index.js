@@ -5,22 +5,22 @@ import cors from 'cors';
 import routes from './routes';
 import models, { connectDb } from './models';
 
+// Import config
 import 'dotenv/config';
 
-// export { connectDb };
+const app = express();
 
-export const app = express();
-
+// Parser
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Routes
 app.use('/api/movies', routes.movies);
 
+// Launch server
 const eraseDatabaseOnSync = false;
-
 const port = process.env.PORT || 5000;
-
 const server = async () => {
   if (eraseDatabaseOnSync) {
     await models.Movies.deleteMany({});
@@ -31,8 +31,7 @@ const server = async () => {
   );
 }
 
-// server();
-
+// Connect server with mongoose
 connectDb()
   .then(() => server())
   .catch(err => {
