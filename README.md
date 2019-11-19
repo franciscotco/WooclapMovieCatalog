@@ -11,7 +11,7 @@ Run the app with docker-compose file to deploy the server on docker.
 
 ### Install
 
-Make sur you have install docker on your computer, if not [install here](https://docs.docker.com/install/linux/docker-ce/ubuntu/) do not forget to select the install for your own system.
+Make sure you have __installed docker and mongodb__ on your computer, if not [install here](https://docs.docker.com/install/linux/docker-ce/ubuntu/) do not forget to select the install for your own system and start them.
 
 #### Go at the root of the repository to build and run your app with :
 
@@ -23,7 +23,6 @@ docker-compose up --build
 
 `The docker-compose run a server on localhost port 5000 and deploy a React view on localhost port 3000`
 
-You have :
 * All the methods are available at 'http://localhost:5000/api/movies/'
 * The home view is available at 'http://localhost:3000/home'
 
@@ -68,6 +67,6 @@ You have :
 
 > @method['GET']:
 * Take 1 query parameter `search`
-* Return the first 10 movie with the substring search in there original_title
+* Return the first 10 movies with the substring search in their original_title
 * Available on get request at __http://localhost:5000/api/movies?search=movie_name__
 
